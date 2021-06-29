@@ -9,18 +9,18 @@ let rolesValidos = {
 let Schema = mongoose.Schema;
 
 let userSchema = new Schema({
-    firstname: {
+    fullname: {
         type: String,
-        required: [true, 'Firstname is mandatory']
+        required: [true, 'Fullname is mandatory']
     },
     lastname: {
         type: String,
         required: [true, 'Lastname is mandatory']
     },
-    dni: {
+    username: {
         type: String,
         unique: true,
-        required: [true, 'Dni is mandatory']
+        required: [true, 'Username is mandatory']
     },
     password: {
         type: String,
@@ -32,8 +32,7 @@ let userSchema = new Schema({
         enum: rolesValidos
     },
     status: {
-        type: Boolean,
-        default: true
+        type: Number
     },
 });
 

@@ -9,7 +9,7 @@ const app = express();
 app.post('/login', (req, res) => {
     let body = req.body;
 
-    User.findOne({username: body.username, status: 1}, (error, userDb) => {
+    User.findOne({employeeId: body.employeeId, status: 1}, (error, userDb) => {
         if (error) {
             return res.status(500).json({
                 ok: false,
@@ -21,7 +21,7 @@ app.post('/login', (req, res) => {
             return res.status(400).json({
                 ok: false,
                 error: {
-                    message: 'Username does not correct.'
+                    message: 'Employee Id does not correct.'
                 }
             });
         }

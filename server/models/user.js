@@ -17,10 +17,10 @@ let userSchema = new Schema({
         type: String,
         required: [true, 'Lastname is mandatory']
     },
-    username: {
+    employeeId: {
         type: String,
         unique: true,
-        required: [true, 'Username is mandatory']
+        required: [true, 'Employee Id is mandatory']
     },
     password: {
         type: String,
@@ -35,5 +35,13 @@ let userSchema = new Schema({
         type: Number
     },
 });
+
+userSchema.methods.toJSON = function() {
+    let user = this
+    let userObject = user.toObject()
+    delete userObject.password
+
+    return userObject
+}
 
 module.exports = mongoose.model('User', userSchema);

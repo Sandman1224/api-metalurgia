@@ -75,7 +75,7 @@ app.post('/login', (req, res) => {
 
             res.json({
                 ok: true,
-                userData: dataResult,
+                data: dataResult,
                 token
             })
         })

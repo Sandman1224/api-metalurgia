@@ -64,7 +64,7 @@ app.post('/login', (req, res) => {
                 userId: userDb._id,
                 userRole: userDb.role,
                 userFullname: userDb.fullname,
-                userLastname: userDb.userLastname,
+                userLastname: userDb.lastname,
                 userEmployeeId: userDb.employeeId,
                 machine: {
                     id: machineDb._id,

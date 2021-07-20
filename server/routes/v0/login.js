@@ -2,8 +2,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/user');
-const Machine = require('../models/machines')
+const User = require('../../models/user');
+const Machine = require('../../models/machines')
 
 const app = express();
 

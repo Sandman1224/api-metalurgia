@@ -1,6 +1,7 @@
 const express = require('express')
 const Template = require('../../models/templates')
 const ObjectId = require('mongoose').Types.ObjectId
+const { ACTIVE_ITEM } = require('../../utils/constans')
 
 const app = express()
 
@@ -41,6 +42,32 @@ app.get('/template/:machineId', (req, res) => {
         }
 
         res.json({
+            ok: true,
+            template: templateDb
+        })
+    })
+})
+
+app.post('/template', (req, res) => {
+    let { type, machine_id, created, created_by } = req.body
+
+    let template = new Template({
+        type,
+        machine_id,
+        status: ACTIVE_ITEM,
+        created,
+        created_by
+    })
+
+    template.save((error, templateDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                error
+            })
+        }
+
+        res.status(201).json({
             ok: true,
             template: templateDb
         })

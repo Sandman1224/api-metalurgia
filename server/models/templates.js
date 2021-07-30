@@ -29,6 +29,6 @@ let templateSchema = new Schema({
     updated_by: {
         type: String
     }
-})
+}, { versionKey: false })
 
 module.exports = mongoose.model('Template', templateSchema)

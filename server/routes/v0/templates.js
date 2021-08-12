@@ -74,4 +74,45 @@ app.post('/template', (req, res) => {
     })
 })
 
+app.post('/setTemplate/:templateId', (req, res) => {
+    const templateId = req.params.templateId
+    const status = req.query.body
+
+    if (!templateId) {
+        return res.status(500).json({
+            ok: false,
+            error: {
+                message: 'The required params are invalid.'
+            }
+        });
+    }
+
+    const bodyUpdate = {
+        status
+    }
+
+    Template.findByIdAndUpdate(templateId, bodyUpdate, (error, templateDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                error
+            });
+        }
+
+        if (!templateDb) {
+            return res.status(400).json({
+                ok: false,
+                error: {
+                    message: 'Something went wrong.'
+                }
+            });
+        }
+
+        res.json({
+            ok: true,
+            template: templateDb
+        })
+    })
+})
+
 module.exports = app;

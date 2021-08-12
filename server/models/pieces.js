@@ -7,7 +7,6 @@ const causesSchema = new Schema({ cause: String })
 let pieceSchema = new Schema({
     piece_number: {
         type: String,
-        unique: true,
         required: [true, 'Piece number is mandatory']
     },
     machine_id: {

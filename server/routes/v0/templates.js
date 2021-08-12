@@ -76,7 +76,7 @@ app.post('/template', (req, res) => {
 
 app.post('/setTemplate/:templateId', (req, res) => {
     const templateId = req.params.templateId
-    const status = req.query.body
+    const { status } = req.body
 
     if (!templateId) {
         return res.status(500).json({

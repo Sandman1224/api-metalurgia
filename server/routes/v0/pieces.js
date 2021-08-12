@@ -7,9 +7,8 @@ const moment = require('moment')
 const app = express()
 
 // Obtener las piezas realizadas por una maquina
-app.get('/pieces/:machineId/:templateId', (req, res) => {
+app.get('/pieces/:machineId', (req, res) => {
     const machineId = req.params.machineId
-    const templateId = req.params.templateId
     const machineCode = req.body.machineCode
 
     if (!machineId) {
@@ -22,8 +21,7 @@ app.get('/pieces/:machineId/:templateId', (req, res) => {
     }
 
     const query = { 
-        machine_id: new ObjectId(machineId),
-        template_id: new ObjectId(templateId) 
+        machine_id: new ObjectId(machineId)
     }
 
     Piece.find(query, (error, piecesDb) => {

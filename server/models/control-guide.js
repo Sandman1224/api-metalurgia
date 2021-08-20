@@ -1,0 +1,45 @@
+const mongoose = require('mongoose')
+
+let Schema = mongoose.Schema
+
+const measureRange = new Schema({
+    min: {
+        type: Number,
+        required: [true, 'Measure min-range is mandatory']
+    },
+    max: {
+        type: Number,
+        required: [true, 'Measure max-range is mandatory']
+    },
+    unit: {
+        type: String,
+        required: [true, 'Measure unit is mandatory']
+    }
+})
+
+const measureSchema = new Schema({
+    type: {
+        type: String,
+        required: [true, 'Measure type is mandatory']
+    },
+    description: String,
+    range: measureRange
+})
+
+let controlGuideSchema = new Schema({
+    type: {
+        type: String,
+        required: [true, 'Type control is mandatory']
+    },
+    measures: [measureSchema],
+    created: {
+        type: Number,
+        required: [true, 'Created date is mandatory']
+    },
+    created_by: {
+        type: String,
+        required: [true, 'Created_by user is mandatory']
+    }
+})
+
+module.exports = mongoose.model('Control-guide', controlGuideSchema)

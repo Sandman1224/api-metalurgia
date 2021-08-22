@@ -25,7 +25,7 @@ app.get('/controlguide/:type', (req, res) => {
 
         res.json({
             ok: true,
-            user: controlTemplatesDb
+            data: controlTemplatesDb
         })
     })
 })

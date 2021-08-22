@@ -5,10 +5,10 @@ const ObjectId = require('mongoose').Types.ObjectId
 const app = express()
 
 // Obtener el plan de control de una pieza en particular
-app.get('/controlplan/:pieceNumber', (req, res) => {
-    let pieceNumber = req.params.pieceNumber
+app.get('/controlplan/:pieceNumber/:status', (req, res) => {
+    const { pieceNumber, status } = req.params
 
-    controlPlan.findOne({ piece_number: pieceNumber }, (error, controlPlanDb) => {
+    controlPlan.findOne({ piece_number: pieceNumber, status }, (error, controlPlanDb) => {
         if (error) {
             return res.status(500).json({
                 ok: false,
@@ -20,7 +20,7 @@ app.get('/controlplan/:pieceNumber', (req, res) => {
             return res.status(400).json({
                 ok: false,
                 error: {
-                    message: 'Can not found required plan control.'
+                    message: 'Can not find required plan control.'
                 }
             });
         }
@@ -34,7 +34,6 @@ app.get('/controlplan/:pieceNumber', (req, res) => {
 
 app.put('/controlplan', (req, res) => {
     const controlPlanData = req.body
-    // TODO: Armar el objeto para guardar en la BD
     controlPlanData.template_id = new ObjectId(controlPlanData.template_id)
 
     let controlPlanSchema = new controlPlan(controlPlanData)

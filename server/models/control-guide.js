@@ -3,18 +3,9 @@ const mongoose = require('mongoose')
 let Schema = mongoose.Schema
 
 const measureRange = new Schema({
-    min: {
-        type: Number,
-        required: [true, 'Measure min-range is mandatory']
-    },
-    max: {
-        type: Number,
-        required: [true, 'Measure max-range is mandatory']
-    },
-    unit: {
-        type: String,
-        required: [true, 'Measure unit is mandatory']
-    }
+    min: Number,
+    max: Number,
+    unit: String
 })
 
 const measureSchema = new Schema({
@@ -27,7 +18,7 @@ const measureSchema = new Schema({
 })
 
 let controlGuideSchema = new Schema({
-    type: {
+    type_template: {
         type: String,
         required: [true, 'Type control is mandatory']
     },

@@ -6,7 +6,7 @@ const app = express()
 app.get('/controlguide/:type', (req, res) => {
     let typeTemplate = req.params.type
 
-    controlGuide.findOne({ type: typeTemplate }, (error, controlTemplatesDb) => {
+    controlGuide.findOne({ type_template: typeTemplate }, (error, controlTemplatesDb) => {
         if (error) {
             return res.status(500).json({
                 ok: false,

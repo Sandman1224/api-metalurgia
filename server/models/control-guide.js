@@ -20,7 +20,7 @@ const measureSchema = new Schema({
 let controlGuideSchema = new Schema({
     type_template: {
         type: String,
-        required: [true, 'Type control is mandatory']
+        required: [true, 'Type_template control is mandatory']
     },
     measures: [measureSchema],
     created: {

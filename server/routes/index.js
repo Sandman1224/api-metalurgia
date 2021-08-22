@@ -7,5 +7,6 @@ app.use(require(`./${version}/user`))
 app.use(require(`./${version}/templates`))
 app.use(require(`./${version}/pieces`))
 app.use(require(`./${version}/controlguide`))
+app.use(require(`./${version}/controlplan`))
 
 module.exports = app;

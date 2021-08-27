@@ -22,6 +22,10 @@ let controlGuideSchema = new Schema({
         type: String,
         required: [true, 'Type_template control is mandatory']
     },
+    template_id: {
+        type: mongoose.ObjectId,
+        required: [true, 'template id is mandatory']
+    },
     measures: [measureSchema],
     created: {
         type: Number,

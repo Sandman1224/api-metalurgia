@@ -50,4 +50,6 @@ let controlPlanSchema = new Schema({
     }
 })
 
+mongoose.set('debug', true)
+
 module.exports = mongoose.model('Control-plan', controlPlanSchema)

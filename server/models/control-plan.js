@@ -26,6 +26,10 @@ let controlPlanSchema = new Schema({
         type: String,
         required: [true, 'type control is mandatory']
     },
+    machine_id: {
+        type: mongoose.ObjectId,
+        required: [true, 'machine id is mandatory']
+    },
     template_id: {
         type: mongoose.ObjectId,
         required: [true, 'template id is mandatory']

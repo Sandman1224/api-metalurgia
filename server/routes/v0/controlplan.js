@@ -5,10 +5,10 @@ const ObjectId = require('mongoose').Types.ObjectId
 const app = express()
 
 // Obtener el plan de control de una pieza en particular
-app.get('/controlplan/:pieceNumber/:status', (req, res) => {
-    const { pieceNumber, status } = req.params
+app.get('/controlplan', (req, res) => {
+    const query = req.body
 
-    controlPlan.findOne({ piece_number: pieceNumber, status }, (error, controlPlanDb) => {
+    controlPlan.findOne(query, (error, controlPlanDb) => {
         if (error) {
             return res.status(500).json({
                 ok: false,

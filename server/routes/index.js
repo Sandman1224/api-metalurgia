@@ -8,5 +8,6 @@ app.use(require(`./${version}/templates`))
 app.use(require(`./${version}/pieces`))
 app.use(require(`./${version}/controlguide`))
 app.use(require(`./${version}/controlplan`))
+app.use(require(`./${version}/machines`))
 
 module.exports = app;

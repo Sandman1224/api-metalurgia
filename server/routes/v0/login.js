@@ -37,7 +37,7 @@ app.post('/login', (req, res) => {
         }
 
         // Control de Ip del dispositivo
-        Machine.findOne({ devices: body.deviceIp, status: 1 }, (errorMachine, machineDb) => {
+        Machine.findOne({ devices: body.deviceIp, status: { $ne: -1 } }, (errorMachine, machineDb) => {
             if (errorMachine) {
                 return res.status(500).json({
                     ok: false,
@@ -69,7 +69,8 @@ app.post('/login', (req, res) => {
                 machine: {
                     id: machineDb._id,
                     name: machineDb.name,
-                    identifier: machineDb.identifier
+                    identifier: machineDb.identifier,
+                    status: machineDb.status
                 }
             }
 

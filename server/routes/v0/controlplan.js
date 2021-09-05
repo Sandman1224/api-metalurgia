@@ -58,7 +58,7 @@ app.post('/controlplan/completeStep/:piece_number', (req, res) => {
     const pieceNumber = req.params.piece_number
     const controlPlanData = req.body
 
-    controlPlan.findOneAndUpdate({ piece_number: pieceNumber }, { "$push": { measures: controlPlanData } }, (error, planControlDb) => {
+    controlPlan.findOneAndUpdate({ piece_number: pieceNumber }, { "$push": { measures: controlPlanData } }, { new: true }, (error, planControlDb) => {
         if (error) {
             return res.status(500).json({
                 ok: false,

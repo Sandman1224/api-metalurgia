@@ -2,11 +2,10 @@ const mongoose = require('mongoose')
 
 let Schema = mongoose.Schema
 
-const causesSchema = new Schema({ cause: String })
-
 let pieceSchema = new Schema({
     piece_number: {
         type: String,
+        unique: true,
         required: [true, 'Piece number is mandatory']
     },
     machine_id: {
@@ -33,7 +32,8 @@ let pieceSchema = new Schema({
     created_by: {
         type: String,
         required: [true, 'Created by is mandatory']
-    }
+    },
+    updated: Number
 })
 
 module.exports = mongoose.model('Piece', pieceSchema)

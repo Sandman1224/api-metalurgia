@@ -11,7 +11,7 @@ let recordSchema = new Schema({
         type: String,
         required: [true, 'Event is mandatory']
     },
-    stopHour: Number,
+    dateTime: Number,
     stopCauses: Array,
     user: {
         type: String,

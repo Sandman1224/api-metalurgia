@@ -11,7 +11,7 @@ module.exports = app
 // Activar/parar la máquina
 app.post('/machine/:machineId/:action', (req, res) => {
     const { machineId, action } = req.params
-    const { stopCauses, stopHour, user } = req.body
+    const { stopCauses, dateTime, user } = req.body
 
     const machineIdFormatted = new ObjectId(machineId)
     let statusMachine = 0
@@ -36,14 +36,26 @@ app.post('/machine/:machineId/:action', (req, res) => {
             });
         }
 
-        // TODO: Crear record
-        const recordData = {
-            event: 'stop-machine',
-            stopHour,
-            stopCauses,
-            user,
-            created: moment().unix()
+        let recordData = {}
+        if (action === 'activate') {
+            recordData = {
+                event: 'enable-machine',
+                dateTime,
+                user,
+                created: moment().unix()
+            }
+        } else if (action === 'desactivate') {
+            recordData = {
+                event: 'stop-machine',
+                dateTime,
+                stopCauses,
+                user,
+                created: moment().unix()
+            }
+        } else {
+            throw new Error('action requested is invalid')
         }
+
         const recordSchema = new recordModel(recordData)
         recordSchema.save().then(savedRecord => {
             if (savedRecord === recordSchema) {

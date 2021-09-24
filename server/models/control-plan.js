@@ -18,7 +18,8 @@ let measuresSchema = new Schema({
     created_by: {
         type: String,
         required: [true, 'Created by user is mandatory']
-    }
+    },
+    measuredValue: Number
 })
 
 let controlPlanSchema = new Schema({

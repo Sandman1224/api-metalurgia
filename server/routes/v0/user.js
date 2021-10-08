@@ -70,4 +70,23 @@ app.get('/user/:id', (req, res) => {
     })
 })
 
+app.put('/user', (req, res) => {
+    let body = req.body
+
+    let userModel = new User(body)
+    userModel.save((error, userDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                error
+            });
+        }
+
+        res.status(201).json({
+            ok: true,
+            data: userDb
+        })
+    })
+})
+
 module.exports = app;

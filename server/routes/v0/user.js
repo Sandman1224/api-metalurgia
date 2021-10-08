@@ -1,4 +1,5 @@
 const express = require('express')
+const bcrypt = require('bcrypt');
 const User = require('../../models/user')
 
 const app = express()
@@ -40,8 +41,44 @@ app.get('/users', (req, res) => {
         })
 })
 
+app.get('/users/:userId', (req, res) => {
+    const userId = req.params.userId
+
+    if (!userId) {
+        return res.status(500).json({
+            ok: false,
+            error: {
+                message: 'The required params are invalid.'
+            }
+        });
+    }
+
+    User.findById(userId, (error, userDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                error
+            });
+        }
+
+        if (!userDb) {
+            return res.status(400).json({
+                ok: false,
+                error: {
+                    message: 'Required data does not exists.'
+                }
+            });
+        }
+
+        res.json({
+            ok: true,
+            data: userDb
+        })
+    })
+})
+
 /**
- * Buscar un usuario por "Id"
+ * Buscar un usuario activo por "employeeId"
  */
 app.get('/user/:id', (req, res) => {
     let employeeId = req.params.id
@@ -73,6 +110,8 @@ app.get('/user/:id', (req, res) => {
 app.put('/user', (req, res) => {
     let body = req.body
 
+    body.password = bcrypt.hashSync(body.password, 10)
+
     let userModel = new User(body)
     userModel.save((error, userDb) => {
         if (error) {
@@ -83,6 +122,47 @@ app.put('/user', (req, res) => {
         }
 
         res.status(201).json({
+            ok: true,
+            data: userDb
+        })
+    })
+})
+
+app.post('/users/:userId', (req, res) => {
+    const userId = req.params.userId
+    const userDataToUpdate = req.body
+
+    if (!userId) {
+        return res.status(500).json({
+            ok: false,
+            error: {
+                message: 'The required params are invalid.'
+            }
+        });
+    }
+
+    if (userDataToUpdate.password) { // Si se editó el password lo encriptamos
+        userDataToUpdate.password = bcrypt.hashSync(userDataToUpdate.password, 10)
+    }
+
+    User.findByIdAndUpdate(userId, { $set: userDataToUpdate }, { runValidators: true, context: 'query' }, (error, userDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                error
+            });
+        }
+
+        if (!userDb) {
+            return res.status(400).json({
+                ok: false,
+                error: {
+                    message: 'Can not find required user to update.'
+                }
+            });
+        }
+
+        res.json({
             ok: true,
             data: userDb
         })

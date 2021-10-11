@@ -128,6 +128,9 @@ app.put('/user', (req, res) => {
     })
 })
 
+/**
+ * Editar un usuario por Id
+ */
 app.post('/users/:userId', (req, res) => {
     const userId = req.params.userId
     const userDataToUpdate = req.body
@@ -158,6 +161,79 @@ app.post('/users/:userId', (req, res) => {
                 ok: false,
                 error: {
                     message: 'Can not find required user to update.'
+                }
+            });
+        }
+
+        res.json({
+            ok: true,
+            data: userDb
+        })
+    })
+})
+
+/**
+ * Setear el estado del usuario
+ */
+app.post('/users/setState/:userId/:action', async (req, res) => {
+    const userId = req.params.userId
+    const action = req.params.action
+
+    if (!userId || !action) {
+        return res.status(500).json({
+            ok: false,
+            error: {
+                message: 'The required params are invalid.'
+            }
+        });
+    }
+
+    const stateToUpdate = {}
+
+    if (['suspend', 'delete'].includes(action)) {
+        let adminUsersDb = await User.find({ role: 'ADMIN', status: 1 }).exec()
+
+        if (!adminUsersDb || adminUsersDb.length < 2) {
+            return res.status(500).json({
+                ok: false,
+                source: 'api-validation',
+                error: {
+                    errors: {
+                        message: 'No se puede suspender/eliminar al último usuario administrador.'
+                    }
+                }
+            });
+        }
+
+        if (action === 'suspend') {
+            stateToUpdate.status = 0
+        } else {
+            stateToUpdate.status = -1
+        }
+        
+    } else if (action === 'enable') {
+        stateToUpdate.status = 1
+    } else {
+        throw new Error('Action required does not exists')
+    }
+
+    User.findByIdAndUpdate(userId, { $set: stateToUpdate }, { runValidators: true, context: 'query' }, (error, userDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                source: 'db-validation',
+                error
+            });
+        }
+
+        if (!userDb) {
+            return res.status(400).json({
+                ok: false,
+                identificator: 'db-validation',
+                error: {
+                    errors: {
+                        message: 'No se puede encontrar al usuario para actualizar su estado.'
+                    }
                 }
             });
         }

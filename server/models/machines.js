@@ -12,12 +12,10 @@ let machineSchema = new Schema({
         unique: true,
         required: [true, 'Machine identifier is mandatory']
     },
-    devices: [
-        {
-            type: String,
-            required: [true, 'Machine ip device is mandatory']
-        }
-    ],
+    devices: {
+        type: String,
+        required: [true, 'Machine ip device is mandatory']
+    },
     status: {
         type: Number
     }

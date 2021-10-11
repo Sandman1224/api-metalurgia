@@ -8,6 +8,44 @@ const recordModel = require('../../models/record')
 
 module.exports = app
 
+// Obtener lista de máquinas activas
+app.get('/machines', (req, res) => {
+    let page = parseInt(req.query.page) || 0
+    let limit = parseInt(req.query.limit) || 1
+
+    const query = { status: { $gt: -1 } }
+
+    machineModel.find(query)
+        .sort({ created: -1 })
+        .skip(page * limit)
+        .limit(limit)
+        .exec((error, machinesDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+
+            machineModel.countDocuments(query).exec((counterError, countDb) => {
+                if (error) {
+                    return res.status(500).json({
+                        ok: false,
+                        error
+                    });
+                }
+
+                return res.json({
+                    ok: true,
+                    total: countDb,
+                    page: page,
+                    pageSize: machinesDb.length,
+                    data: machinesDb
+                })
+            })
+        })
+})
+
 // Activar/parar la máquina
 app.post('/machine/:machineId/:action', (req, res) => {
     const { machineId, action } = req.params

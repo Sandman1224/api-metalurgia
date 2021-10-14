@@ -80,10 +80,10 @@ app.get('/users/:userId', (req, res) => {
 /**
  * Buscar un usuario activo por "employeeId"
  */
-app.get('/user/:id', (req, res) => {
-    let employeeId = req.params.id
+app.get('/user/:employeeId', (req, res) => {
+    const employeeId = req.params.employeeId
 
-    User.findOne({ employeeId, status: 1 }, (error, userDb) => {
+    User.findOne({ employeeId, status: { $gt: -1 } }, (error, userDb) => {
         if (error) {
             return res.status(500).json({
                 ok: false,

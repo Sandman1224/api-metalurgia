@@ -11,20 +11,20 @@ let Schema = mongoose.Schema;
 let userSchema = new Schema({
     fullname: {
         type: String,
-        required: [true, 'Fullname is mandatory']
+        required: [true, 'El nombre completo es obligatorio']
     },
     lastname: {
         type: String,
-        required: [true, 'Lastname is mandatory']
+        required: [true, 'El apellido es obligatorio']
     },
     employeeId: {
         type: String,
         unique: true,
-        required: [true, 'Employee Id is mandatory']
+        required: [true, 'El número de empleado es obligatorio']
     },
     password: {
         type: String,
-        required: [true, 'Password is mandatory']
+        required: [true, 'El password es obligatorio']
     },
     role: {
         type: String,
@@ -32,9 +32,12 @@ let userSchema = new Schema({
         enum: rolesValidos
     },
     status: {
-        type: Number
+        type: Number,
+        required: [true, 'El status es obligatorio']
     },
 });
+
+userSchema.plugin(uniqueValidator, { message: 'El usuario ya se encuentra registrado' })
 
 userSchema.methods.toJSON = function() {
     let user = this

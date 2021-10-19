@@ -36,6 +36,29 @@ app.post('/login', (req, res) => {
             })
         }
 
+        // Encriptación de datos para el token
+        const token = jwt.sign({
+            user: userDb,
+        }, process.env.SEED, {
+            expiresIn: process.env.CADUCIDAD_TOKEN
+        })
+
+        const dataResult = {
+            userId: userDb._id,
+            userRole: userDb.role,
+            userFullname: userDb.fullname,
+            userLastname: userDb.lastname,
+            userEmployeeId: userDb.employeeId
+        }
+
+        if (userDb.role === 'ADMIN') {
+            return res.json({
+                ok: true,
+                data: dataResult,
+                token
+            })
+        }
+
         // Control de Ip del dispositivo
         Machine.findOne({ devices: body.deviceIp, status: { $ne: -1 } }, (errorMachine, machineDb) => {
             if (errorMachine) {
@@ -53,12 +76,6 @@ app.post('/login', (req, res) => {
                     }
                 })
             }
-
-            let token = jwt.sign({
-                user: userDb,
-            }, process.env.SEED, {
-                expiresIn: process.env.CADUCIDAD_TOKEN
-            })
 
             const dataResult = {
                 userId: userDb._id,

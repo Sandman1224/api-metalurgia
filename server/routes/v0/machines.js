@@ -6,6 +6,8 @@ const app = express()
 const machineModel = require('../../models/machines')
 const recordModel = require('../../models/record')
 
+const machineFacade = require('../../facade/machines-facade')
+
 module.exports = app
 
 // Obtener lista de máquinas activas
@@ -13,9 +15,10 @@ app.get('/machines', (req, res) => {
     let page = parseInt(req.query.page) || 0
     let limit = parseInt(req.query.limit) || 1
 
-    const query = { status: { $gt: -1 } }
+    const queryData = req.body ? req.body : {}
+    const bodyQuery = machineFacade.queryBuilder(queryData)
 
-    machineModel.find(query)
+    machineModel.find(bodyQuery)
         .sort({ created: -1 })
         .skip(page * limit)
         .limit(limit)
@@ -27,11 +30,11 @@ app.get('/machines', (req, res) => {
                 });
             }
 
-            machineModel.countDocuments(query).exec((counterError, countDb) => {
-                if (error) {
+            machineModel.countDocuments(bodyQuery).exec((counterError, countDb) => {
+                if (counterError) {
                     return res.status(500).json({
                         ok: false,
-                        error
+                        counterError
                     });
                 }
 

@@ -29,7 +29,8 @@ app.post('/login', (req, res) => {
 
         if (!bcrypt.compareSync(body.password, userDb.password)) {
             return res.status(400).json({
-                of: false,
+                ok: false,
+                key: 'user-authentication',
                 error: {
                     message: 'Password does not correct.'
                 }
@@ -71,6 +72,7 @@ app.post('/login', (req, res) => {
             if (!machineDb) {
                 return res.status(400).json({
                     ok: false,
+                    key: 'device-ip',
                     error: {
                         message: 'Device Ip does not correct.'
                     }

@@ -1,6 +1,7 @@
 const express = require('express')
 const bcrypt = require('bcrypt');
 const User = require('../../models/user')
+const userFacade = require('../../facade/users-facade')
 
 const app = express()
 
@@ -8,9 +9,10 @@ app.get('/users', (req, res) => {
     let page = parseInt(req.query.page) || 0
     let limit = parseInt(req.query.limit) || 1
 
-    const query = { status: { $gt: -1 } }
+    const queryData = req.body ? req.body : {}
+    const bodyQuery = userFacade.queryBuilder(queryData)
 
-    User.find(query)
+    User.find(bodyQuery)
         .sort({ created: -1 })
         .skip(page * limit)
         .limit(limit)
@@ -22,11 +24,11 @@ app.get('/users', (req, res) => {
                 });
             }
 
-            User.countDocuments(query).exec((counterError, countDb) => {
-                if (error) {
+            User.countDocuments(bodyQuery).exec((counterError, countDb) => {
+                if (counterError) {
                     return res.status(500).json({
                         ok: false,
-                        error
+                        counterError
                     });
                 }
 

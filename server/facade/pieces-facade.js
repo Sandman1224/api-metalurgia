@@ -53,6 +53,26 @@ function zeroFill(number, width)
   return number + "";
 }
 
+function queryBuilder(data) {
+    const query = {}
+
+    query.status = { $gt: -1 }
+    if (data.status) {
+        query.status = data.status
+    }
+
+    if (data.piece_number) {
+        query.piece_number = { $regex: new RegExp(`${data.piece_number}`), $options: 'i' }
+    }
+
+    if (data.template_id) {
+        query.template_id = data.template_id
+    }
+
+    return query
+}
+
 module.exports = {
-    getPieceCode
+    getPieceCode,
+    queryBuilder
 }

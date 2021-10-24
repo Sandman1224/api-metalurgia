@@ -54,6 +54,44 @@ app.get('/pieces/:machineId', (req, res) => {
     })
 })
 
+app.get('/piecesByPagination', (req, res) => {
+    let page = parseInt(req.query.page) || 0
+    let limit = parseInt(req.query.limit) || 1
+
+    const queryData = req.body ? req.body : {}
+    const bodyQuery = piecesFacade.queryBuilder(queryData)
+
+    Piece.find(bodyQuery)
+    .sort({ created: -1 })
+    .skip(page * limit)
+    .limit(limit)
+    .exec((error, piecesDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                error
+            });
+        }
+
+        Piece.countDocuments(bodyQuery).exec((counterError, countDb) => {
+            if (counterError) {
+                return res.status(500).json({
+                    ok: false,
+                    counterError
+                });
+            }
+
+            return res.json({
+                ok: true,
+                total: countDb,
+                page: page,
+                pageSize: piecesDb.length,
+                data: piecesDb
+            })
+        })
+    })
+})
+
 app.get('/pieces', (req, res) => {
     let queryBuilder = req.body.query
     

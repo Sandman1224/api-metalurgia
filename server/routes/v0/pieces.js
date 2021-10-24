@@ -54,6 +54,56 @@ app.get('/pieces/:machineId', (req, res) => {
     })
 })
 
+app.get('/piecesByPagination', (req, res) => {
+    const action = req.query.action ? req.query.action : 'data'
+    const page = parseInt(req.query.page) || 0
+    const limit = parseInt(req.query.limit) || 1
+    
+    const queryData = req.body ? req.body : {}
+    const bodyQuery = piecesFacade.queryBuilder(queryData)
+    
+    const query = Piece.find(bodyQuery)
+    if (action !== 'export') {
+
+        query.sort({ created: -1 })
+        query.skip(page * limit)
+        query.limit(limit)
+    }
+
+    query.exec((error, piecesDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                error
+            });
+        }
+
+        if (action !== 'export') { // Listado de datos con paginación
+            Piece.countDocuments(bodyQuery).exec((counterError, countDb) => {
+                if (counterError) {
+                    return res.status(500).json({
+                        ok: false,
+                        counterError
+                    });
+                }
+    
+                return res.json({
+                    ok: true,
+                    total: countDb,
+                    page: page,
+                    pageSize: piecesDb.length,
+                    data: piecesDb
+                })
+            })
+        } else {
+            return res.json({
+                ok: true,
+                data: piecesDb
+            })
+        }
+    })
+})
+
 app.get('/pieces', (req, res) => {
     let queryBuilder = req.body.query
     

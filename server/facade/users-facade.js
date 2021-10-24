@@ -8,6 +8,10 @@ function queryBuilder(data) {
         query._id = { $in: listIds }
     }
 
+    if (data.idsEmployees) {
+        query.employeeId = { $in: data.idsEmployees }
+    }
+
     return query
 }
 

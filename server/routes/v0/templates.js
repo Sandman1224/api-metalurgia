@@ -7,24 +7,29 @@ const { ACTIVE_ITEM } = require('../../utils/constans')
 const app = express()
 
 app.get('/template', (req, res) => {
+    const action = req.query.action ? req.query.action : 'data'
     let page = parseInt(req.query.page) || 0
     let limit = parseInt(req.query.limit) || 1
 
     const queryData = req.body ? req.body : {}
     const bodyQuery = templatesFacade.queryBuilder(queryData)
 
-    Template.find(bodyQuery)
-        .sort({ created: -1 })
-        .skip(page * limit)
-        .limit(limit)
-        .exec((error, templatesDb) => {
-            if (error) {
-                return res.status(500).json({
-                    ok: false,
-                    error
-                });
-            }
+    const query = Template.find(bodyQuery)
+    if (action !== 'export') {
+        query.sort({ created: -1 })
+        query.skip(page * limit)
+        query.limit(limit)
+    }
 
+    query.exec((error, templatesDb) => {
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                error
+            });
+        }
+
+        if (action !== 'export') {
             Template.countDocuments(bodyQuery).exec((counterError, countDb) => {
                 if (counterError) {
                     return res.status(500).json({
@@ -32,7 +37,7 @@ app.get('/template', (req, res) => {
                         counterError
                     });
                 }
-
+    
                 return res.json({
                     ok: true,
                     total: countDb,
@@ -41,7 +46,13 @@ app.get('/template', (req, res) => {
                     data: templatesDb
                 })
             })
-        })
+        } else {
+            return res.json({
+                ok: true,
+                data: templatesDb
+            })
+        }
+    })
 })
 
 app.get('/template/:machineId', (req, res) => {

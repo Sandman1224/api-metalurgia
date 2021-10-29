@@ -29,10 +29,34 @@ app.post('/login', (req, res) => {
 
         if (!bcrypt.compareSync(body.password, userDb.password)) {
             return res.status(400).json({
-                of: false,
+                ok: false,
+                key: 'user-authentication',
                 error: {
                     message: 'Password does not correct.'
                 }
+            })
+        }
+
+        // Encriptación de datos para el token
+        const token = jwt.sign({
+            user: userDb,
+        }, process.env.SEED, {
+            expiresIn: process.env.CADUCIDAD_TOKEN
+        })
+
+        const dataResult = {
+            userId: userDb._id,
+            userRole: userDb.role,
+            userFullname: userDb.fullname,
+            userLastname: userDb.lastname,
+            userEmployeeId: userDb.employeeId
+        }
+
+        if (userDb.role === 'ADMIN') {
+            return res.json({
+                ok: true,
+                data: dataResult,
+                token
             })
         }
 
@@ -48,17 +72,12 @@ app.post('/login', (req, res) => {
             if (!machineDb) {
                 return res.status(400).json({
                     ok: false,
+                    key: 'device-ip',
                     error: {
                         message: 'Device Ip does not correct.'
                     }
                 })
             }
-
-            let token = jwt.sign({
-                user: userDb,
-            }, process.env.SEED, {
-                expiresIn: process.env.CADUCIDAD_TOKEN
-            })
 
             const dataResult = {
                 userId: userDb._id,

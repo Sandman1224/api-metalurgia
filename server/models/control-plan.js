@@ -35,6 +35,10 @@ let controlPlanSchema = new Schema({
         type: mongoose.ObjectId,
         required: [true, 'template id is mandatory']
     },
+    type_template: {
+        type: String,
+        required: [true, 'Type template is mandatory']
+    },
     piece_number: {
         type: String,
         unique: true,

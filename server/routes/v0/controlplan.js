@@ -1,8 +1,62 @@
 const express = require('express')
 const controlPlan = require('../../models/control-plan')
 const ObjectId = require('mongoose').Types.ObjectId
+const planControlFacade = require('../../facade/plancontrol-facade')
 
 const app = express()
+
+app.get('/controlplans', (req, res) => {
+    try {
+        const action = req.query.action ? req.query.action : 'data'
+        const page = parseInt(req.query.page) || 0
+        const limit = parseInt(req.query.limit) || 1
+
+        const queryData = req.body ? req.body : {}
+        const bodyQuery = planControlFacade.queryBuilder(queryData)
+
+        const query = controlPlan.find(bodyQuery)
+        if (action !== 'export') {
+            query.sort({ created: -1 })
+            query.skip(page * limit)
+            query.limit(limit)
+        }
+
+        query.exec((error, plancontrolDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+
+            if (action !== 'export') { // Listado de datos con paginación
+                controlPlan.countDocuments(bodyQuery).exec((counterError, countDb) => {
+                    if (counterError) {
+                        return res.status(500).json({
+                            ok: false,
+                            counterError
+                        });
+                    }
+                    
+                    return res.json({
+                        ok: true,
+                        total: countDb,
+                        page: page,
+                        pageSize: plancontrolDb.length,
+                        data: plancontrolDb
+                    })
+                })
+            } else {
+                return res.json({
+                    ok: true,
+                    data: plancontrolDb
+                })
+            }
+        })
+    } catch(error) {
+        next(error)
+    }
+})
 
 // Obtener el plan de control de una pieza en particular
 app.get('/controlplan', (req, res) => {

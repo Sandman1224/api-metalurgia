@@ -48,6 +48,40 @@ app.get('/reasons', (req, res) => {
     }
 })
 
+app.get('/reasons/internal', (req, res, next) => {
+    try {
+        const queryData = req.body ? req.body : {}
+        const bodyQuery = reasonsFacade.queryBuilder(queryData)
+
+        const query = reasonsModel.find(bodyQuery)
+        query.exec((error, reasonsDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+
+            if (!reasonsDb) {
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'Required data does not exists.'
+                    }
+                });
+            }
+
+            return res.json({
+                ok: true,
+                data: reasonsDb
+            })
+        })
+
+    } catch(error) {
+        next(error)
+    }
+})
+
 /**
  * Buscar una causa por id
  */

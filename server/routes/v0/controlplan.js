@@ -5,7 +5,7 @@ const planControlFacade = require('../../facade/plancontrol-facade')
 
 const app = express()
 
-app.get('/controlplans', (req, res) => {
+app.get('/controlplans', (req, res, next) => {
     try {
         const action = req.query.action ? req.query.action : 'data'
         const page = parseInt(req.query.page) || 0
@@ -59,109 +59,125 @@ app.get('/controlplans', (req, res) => {
 })
 
 // Obtener el plan de control de una pieza en particular
-app.get('/controlplan', (req, res) => {
-    const query = req.body
-
-    controlPlan.findOne(query, (error, controlPlanDb) => {
-        if (error) {
-            return res.status(500).json({
-                ok: false,
-                error
-            });
-        }
-
-        if (!controlPlanDb) {
-            return res.status(400).json({
-                ok: false,
-                error: {
-                    message: 'Can not find required plan control.'
-                }
-            });
-        }
-
-        res.json({
-            ok: true,
-            data: controlPlanDb
+app.get('/controlplan', (req, res, next) => {
+    try {
+        const query = req.body
+    
+        controlPlan.findOne(query, (error, controlPlanDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+    
+            if (!controlPlanDb) {
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'Can not find required plan control.'
+                    }
+                });
+            }
+    
+            res.json({
+                ok: true,
+                data: controlPlanDb
+            })
         })
-    })
+    } catch(error) {
+        next(error)
+    }
 })
 
 // Crear un nuevo plan de control para una pieza en particular
-app.put('/controlplan', (req, res) => {
-    const controlPlanData = req.body
-    controlPlanData.template_id = new ObjectId(controlPlanData.template_id)
-
-    let controlPlanSchema = new controlPlan(controlPlanData)
-    controlPlanSchema.save((error, controlPlanDb) => {
-        if (error) {
-            return res.status(500).json({
-                ok: false,
-                error
+app.put('/controlplan', (req, res, next) => {
+    try {
+        const controlPlanData = req.body
+        controlPlanData.template_id = new ObjectId(controlPlanData.template_id)
+    
+        let controlPlanSchema = new controlPlan(controlPlanData)
+        controlPlanSchema.save((error, controlPlanDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                })
+            }
+    
+            res.status(201).json({
+                ok: true,
+                data: controlPlanDb
             })
-        }
-
-        res.status(201).json({
-            ok: true,
-            data: controlPlanDb
         })
-    })
+    } catch(error) {
+        next(error)
+    }
 })
 
 // Finalizar una medición del plan de control para una pieza en particular
-app.post('/controlplan/completeStep/:piece_number', (req, res) => {
-    const pieceNumber = req.params.piece_number
-    const controlPlanData = req.body
-
-    controlPlan.findOneAndUpdate({ piece_number: pieceNumber }, { "$push": { measures: controlPlanData } }, { new: true }, (error, planControlDb) => {
-        if (error) {
-            return res.status(500).json({
-                ok: false,
-                error
-            });
-        }
-
-        if (!planControlDb) {
-            return res.status(400).json({
-                ok: false,
-                error: {
-                    message: 'Can not find required plan control.'
-                }
-            });
-        }
-
-        res.json({
-            ok: true,
-            data: planControlDb
+app.post('/controlplan/completeStep/:piece_number', (req, res, next) => {
+    try {
+        const pieceNumber = req.params.piece_number
+        const controlPlanData = req.body
+    
+        controlPlan.findOneAndUpdate({ piece_number: pieceNumber }, { "$push": { measures: controlPlanData } }, { new: true }, (error, planControlDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+    
+            if (!planControlDb) {
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'Can not find required plan control.'
+                    }
+                });
+            }
+    
+            res.json({
+                ok: true,
+                data: planControlDb
+            })
         })
-    })
+    } catch(error) {
+        next(error)
+    }
 })
 
-app.post('/controlplan/completePlanControl/:piece_number', (req, res) => {
-    const pieceNumber = req.params.piece_number
-    const statusPlanControl = parseInt(req.body.status)
-
-    controlPlan.findOneAndUpdate({ piece_number: pieceNumber }, { $set: { status: statusPlanControl } }, (error, planControlDb) => {
-        if (error) {
-            return res.status(500).json({
-                ok: false,
-                error
-            });
-        }
-
-        if (!planControlDb) {
-            return res.status(400).json({
-                ok: false,
-                error: {
-                    message: 'Can not find required plan control.'
-                }
-            });
-        }
-
-        res.json({
-            ok: true,
-            data: planControlDb
+app.post('/controlplan/completePlanControl/:piece_number', (req, res, next) => {
+    try {
+        const pieceNumber = req.params.piece_number
+        const statusPlanControl = parseInt(req.body.status)
+    
+        controlPlan.findOneAndUpdate({ piece_number: pieceNumber }, { $set: { status: statusPlanControl } }, (error, planControlDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+    
+            if (!planControlDb) {
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'Can not find required plan control.'
+                    }
+                });
+            }
+    
+            res.json({
+                ok: true,
+                data: planControlDb
+            })
         })
-    })
+    } catch(error) {
+        next(error)
+    }
 })
 
 module.exports = app

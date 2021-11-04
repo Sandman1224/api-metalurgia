@@ -4,7 +4,7 @@ const reasonsFacade = require('../../facade/reasons-facade')
 
 const app = express()
 
-app.get('/reasons', (req, res) => {
+app.get('/reasons', (req, res, next) => {
     try {
         const action = req.query.action ? req.query.action : 'data'
         const page = parseInt(req.query.page) || 0
@@ -85,144 +85,160 @@ app.get('/reasons/internal', (req, res, next) => {
 /**
  * Buscar una causa por id
  */
- app.get('/reasons/:reasonId', (req, res) => {
-    const reasonId = req.params.reasonId
-
-    if (!reasonId) {
-        return res.status(500).json({
-            ok: false,
-            error: {
-                message: 'The required params are invalid.'
-            }
-        });
-    }
-
-    reasonsModel.findById(reasonId, (error, reasonDb) => {
-        if (error) {
+ app.get('/reasons/:reasonId', (req, res, next) => {
+    try {
+        const reasonId = req.params.reasonId
+    
+        if (!reasonId) {
             return res.status(500).json({
                 ok: false,
-                error
-            });
-        }
-
-        if (!reasonDb) {
-            return res.status(400).json({
-                ok: false,
                 error: {
-                    message: 'Required data does not exists.'
+                    message: 'The required params are invalid.'
                 }
             });
         }
-
-        res.json({
-            ok: true,
-            data: reasonDb
+    
+        reasonsModel.findById(reasonId, (error, reasonDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+    
+            if (!reasonDb) {
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'Required data does not exists.'
+                    }
+                });
+            }
+    
+            res.json({
+                ok: true,
+                data: reasonDb
+            })
         })
-    })
+    } catch(error) {
+        next(error)
+    }
 })
 
 /**
  * Editar una razon por Id
  */
- app.post('/reasons/:reasonId', (req, res) => {
-    const reasonId = req.params.reasonId
-    const reasonDataToUpdate = req.body
-
-    if (!reasonId) {
-        return res.status(500).json({
-            ok: false,
-            error: {
-                message: 'The required params are invalid.'
-            }
-        });
-    }
-
-    reasonsModel.findByIdAndUpdate(reasonId, { $set: reasonDataToUpdate }, { runValidators: true, context: 'query' }, (error, reasonDb) => {
-        if (error) {
+ app.post('/reasons/:reasonId', (req, res, next) => {
+    try {
+        const reasonId = req.params.reasonId
+        const reasonDataToUpdate = req.body
+    
+        if (!reasonId) {
             return res.status(500).json({
                 ok: false,
-                error
-            });
-        }
-
-        if (!reasonDb) {
-            return res.status(400).json({
-                ok: false,
                 error: {
-                    message: 'Can not find required machine to update.'
+                    message: 'The required params are invalid.'
                 }
             });
         }
-
-        res.json({
-            ok: true,
-            data: reasonDb
+    
+        reasonsModel.findByIdAndUpdate(reasonId, { $set: reasonDataToUpdate }, { runValidators: true, context: 'query' }, (error, reasonDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+    
+            if (!reasonDb) {
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'Can not find required machine to update.'
+                    }
+                });
+            }
+    
+            res.json({
+                ok: true,
+                data: reasonDb
+            })
         })
-    })
+    } catch(error) {
+        next(error)
+    }
 })
 
 /**
  * Agregar una nueva razón
  */
-app.put('/reasons', (req, res) => {
-    let body = req.body
-
-    let reasonModel = new reasonsModel(body)
-    reasonModel.save((error, reasonDb) => {
-        if (error) {
-            return res.status(500).json({
-                ok: false,
-                source: 'db-validation',
-                error
-            });
-        }
-
-        res.status(201).json({
-            ok: true,
-            data: reasonDb
+app.put('/reasons', (req, res, next) => {
+    try {
+        let body = req.body
+    
+        let reasonModel = new reasonsModel(body)
+        reasonModel.save((error, reasonDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    source: 'db-validation',
+                    error
+                });
+            }
+    
+            res.status(201).json({
+                ok: true,
+                data: reasonDb
+            })
         })
-    })
+    } catch(error) {
+        next(error)
+    }
 })
 
 /**
  * Eliminar una razon por id
  */
-app.delete('/reasons/:reasonId', (req, res) => {
-    const reasonId = req.params.reasonId
-
-    if (!reasonId) {
-        return res.status(500).json({
-            ok: false,
-            error: {
-                message: 'The required params are invalid.'
-            }
-        });
-    }
-
-    const deletedStatus = { status: -1 }
-
-    reasonsModel.findByIdAndUpdate(reasonId, { $set: deletedStatus }, { runValidators: true, context: 'query' }, (error, reasonDb) => {
-        if (error) {
+app.delete('/reasons/:reasonId', (req, res, next) => {
+    try {
+        const reasonId = req.params.reasonId
+    
+        if (!reasonId) {
             return res.status(500).json({
                 ok: false,
-                error
-            });
-        }
-
-        if (!reasonDb) {
-            return res.status(400).json({
-                ok: false,
                 error: {
-                    message: 'Can not find required machine to update.'
+                    message: 'The required params are invalid.'
                 }
             });
         }
-
-        res.json({
-            ok: true,
-            data: reasonDb
+    
+        const deletedStatus = { status: -1 }
+    
+        reasonsModel.findByIdAndUpdate(reasonId, { $set: deletedStatus }, { runValidators: true, context: 'query' }, (error, reasonDb) => {
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+    
+            if (!reasonDb) {
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'Can not find required machine to update.'
+                    }
+                });
+            }
+    
+            res.json({
+                ok: true,
+                data: reasonDb
+            })
         })
-    })
+    } catch(error) {
+        next(error)
+    }
 })
 
 module.exports = app

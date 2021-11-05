@@ -182,13 +182,24 @@ app.put('/pieces', (req, res, next) => {
                     error
                 });
             }
-    
-            res.status(201).json({
-                ok: true,
-                data: {
-                    piece: pieceDb
+
+            const countQueryBuilder = { template_id: body.template_id, status: { $gt: -1 } }
+            Piece.countDocuments(countQueryBuilder).exec((counterError, countDb) => {
+                if (counterError) {
+                    return res.status(500).json({
+                        ok: false,
+                        counterError
+                    });
                 }
-            });
+
+                res.status(201).json({
+                    ok: true,
+                    totalByTemplate: countDb,
+                    data: {
+                        piece: pieceDb
+                    }
+                })
+            })
         })
     } catch(error) {
         next(error)

@@ -1,40 +1,40 @@
 function getPieceCode(machineCode, currentMonth, pieceNumber) {
     let monthCode = ''
     switch (currentMonth) {
-        case '0':
+        case '1':
             monthCode = 'A'
             break
-        case '1':
+        case '2':
             monthCode = 'B'
             break
-        case '2':
+        case '3':
             monthCode = 'C'
             break
-        case '3':
+        case '4':
             monthCode = 'D'
             break
-        case '4':
+        case '5':
             monthCode = 'E'
             break
-        case '5':
+        case '6':
             monthCode = 'H'
             break
-        case '6':
+        case '7':
             monthCode = 'I'
             break
-        case '7':
+        case '8':
             monthCode = 'K'
             break
-        case '8':
+        case '9':
             monthCode = 'L'
             break
-        case '9':
+        case '10':
             monthCode = 'M'
             break
-        case '10':
+        case '11':
             monthCode = 'N'
             break
-        case '11':
+        case '12':
             monthCode = 'O'
             break
     }

@@ -170,7 +170,7 @@ app.post('/machine/:machineId/:action', (req, res, next) => {
 })
 
 // Agregar una nueva máquina
-app.put('/machines', machineMiddleware.ipValidation, (req, res, next) => {
+app.put('/machines', machineMiddleware.preSaveValidations, (req, res, next) => {
     try {
         let body = req.body
     
@@ -197,7 +197,7 @@ app.put('/machines', machineMiddleware.ipValidation, (req, res, next) => {
 /**
  * Editar una maquina por Id
  */
- app.post('/machines/:machineId', (req, res, next) => {
+ app.post('/machines/:machineId', machineMiddleware.preSaveValidations, (req, res, next) => {
     try {
         const machineId = req.params.machineId
         const machineDataToUpdate = req.body

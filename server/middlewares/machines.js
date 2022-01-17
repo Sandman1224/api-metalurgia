@@ -1,13 +1,20 @@
 const machineModel = require('../models/machines')
+const ObjectId = require('mongoose').Types.ObjectId
 
 /**
  * Verificar que no existe una máquina activa con la misma ip
  */
-const ipValidation = (req, res, next) => {
+const preSaveValidations = (req, res, next) => {
     const { devices, identifier } = req.body
+    const machineId = req.params.machineId
+
+    const queryBuilder = { status: 1, $or: [ { devices: devices }, { identifier: identifier } ] }
+    if (machineId) {
+        queryBuilder._id = { $ne: new ObjectId(machineId) }
+    }
 
     try {
-        machineModel.findOne({ status: 1, $or: [ { devices: devices }, { identifier: identifier } ] }, (error, machineDb) => {
+        machineModel.findOne(queryBuilder, (error, machineDb) => {
             if (error) {
                 return res.status(500).json({
                     ok: false,
@@ -41,5 +48,5 @@ const ipValidation = (req, res, next) => {
 }
 
 module.exports = {
-    ipValidation
+    preSaveValidations
 }

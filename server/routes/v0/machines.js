@@ -8,6 +8,8 @@ const recordModel = require('../../models/record')
 
 const machineFacade = require('../../facade/machines-facade')
 
+const machineMiddleware = require('../../middlewares/machines')
+
 module.exports = app
 
 // Obtener lista de máquinas activas
@@ -168,7 +170,7 @@ app.post('/machine/:machineId/:action', (req, res, next) => {
 })
 
 // Agregar una nueva máquina
-app.put('/machines', (req, res, next) => {
+app.put('/machines', machineMiddleware.ipValidation, (req, res, next) => {
     try {
         let body = req.body
     

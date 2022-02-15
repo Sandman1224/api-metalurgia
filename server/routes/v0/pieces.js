@@ -4,10 +4,12 @@ const Piece = require('../../models/pieces')
 const piecesFacade = require('../../facade/pieces-facade')
 const moment = require('moment')
 
+const securityMiddleware = require('../../middlewares/authentication')
+
 const app = express()
 
 // Obtener las piezas realizadas por una maquina
-app.get('/pieces/:machineId', (req, res, next) => {
+app.get('/pieces/:machineId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const machineId = req.params.machineId
         const machineCode = req.body.machineCode
@@ -58,7 +60,7 @@ app.get('/pieces/:machineId', (req, res, next) => {
     }
 })
 
-app.get('/piecesByPagination', (req, res, next) => {
+app.get('/piecesByPagination', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const action = req.query.action ? req.query.action : 'data'
         const page = parseInt(req.query.page) || 0
@@ -112,7 +114,7 @@ app.get('/piecesByPagination', (req, res, next) => {
     }
 })
 
-app.get('/pieces', (req, res, next) => {
+app.get('/pieces', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let queryBuilder = req.body.query
         
@@ -169,7 +171,7 @@ app.get('/pieces', (req, res, next) => {
 })
 
 // Agrega una nueva pieza a la plantilla
-app.put('/pieces', (req, res, next) => {
+app.put('/pieces', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let body = req.body
     
@@ -207,7 +209,7 @@ app.put('/pieces', (req, res, next) => {
 })
 
 // Actualizar una pieza
-app.post('/pieces/:piece_number', (req, res, next) => {
+app.post('/pieces/:piece_number', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const pieceNumber = req.params.piece_number
         const dataToUpdate = req.body

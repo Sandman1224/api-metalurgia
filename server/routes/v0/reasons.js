@@ -2,9 +2,11 @@ const express = require('express')
 const reasonsModel = require('../../models/reasons')
 const reasonsFacade = require('../../facade/reasons-facade')
 
+const securityMiddleware = require('../../middlewares/authentication')
+
 const app = express()
 
-app.get('/reasons', (req, res, next) => {
+app.get('/reasons', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const action = req.query.action ? req.query.action : 'data'
         const page = parseInt(req.query.page) || 0
@@ -48,7 +50,7 @@ app.get('/reasons', (req, res, next) => {
     }
 })
 
-app.get('/reasons/internal', (req, res, next) => {
+app.get('/reasons/internal', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const queryData = req.body ? req.body : {}
         const bodyQuery = reasonsFacade.queryBuilder(queryData)
@@ -85,7 +87,7 @@ app.get('/reasons/internal', (req, res, next) => {
 /**
  * Buscar una causa por id
  */
- app.get('/reasons/:reasonId', (req, res, next) => {
+ app.get('/reasons/:reasonId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const reasonId = req.params.reasonId
     
@@ -128,7 +130,7 @@ app.get('/reasons/internal', (req, res, next) => {
 /**
  * Editar una razon por Id
  */
- app.post('/reasons/:reasonId', (req, res, next) => {
+ app.post('/reasons/:reasonId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const reasonId = req.params.reasonId
         const reasonDataToUpdate = req.body
@@ -172,7 +174,7 @@ app.get('/reasons/internal', (req, res, next) => {
 /**
  * Agregar una nueva razón
  */
-app.put('/reasons', (req, res, next) => {
+app.put('/reasons', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let body = req.body
     
@@ -199,7 +201,7 @@ app.put('/reasons', (req, res, next) => {
 /**
  * Eliminar una razon por id
  */
-app.delete('/reasons/:reasonId', (req, res, next) => {
+app.delete('/reasons/:reasonId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const reasonId = req.params.reasonId
     

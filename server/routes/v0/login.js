@@ -5,9 +5,11 @@ const jwt = require('jsonwebtoken');
 const User = require('../../models/user');
 const Machine = require('../../models/machines')
 
+const securityMiddleware = require('../../middlewares/authentication')
+
 const app = express();
 
-app.post('/login', (req, res, next) => {
+app.post('/login', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let body = req.body;
     

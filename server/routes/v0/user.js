@@ -3,9 +3,11 @@ const bcrypt = require('bcrypt');
 const User = require('../../models/user')
 const userFacade = require('../../facade/users-facade')
 
+const securityMiddleware = require('../../middlewares/authentication')
+
 const app = express()
 
-app.get('/users', (req, res, next) => {
+app.get('/users', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let page = parseInt(req.query.page) || 0
         let limit = parseInt(req.query.limit) || 1
@@ -47,7 +49,7 @@ app.get('/users', (req, res, next) => {
     }
 })
 
-app.get('/users/:userId', (req, res, next) => {
+app.get('/users/:userId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const userId = req.params.userId
     
@@ -90,7 +92,7 @@ app.get('/users/:userId', (req, res, next) => {
 /**
  * Buscar un usuario activo por "employeeId"
  */
-app.get('/user/:employeeId', (req, res, next) => {
+app.get('/user/:employeeId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const employeeId = req.params.employeeId
     
@@ -121,7 +123,7 @@ app.get('/user/:employeeId', (req, res, next) => {
     }
 })
 
-app.put('/user', (req, res, next) => {
+app.put('/user', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let body = req.body
     
@@ -149,7 +151,7 @@ app.put('/user', (req, res, next) => {
 /**
  * Editar un usuario por Id
  */
-app.post('/users/:userId', (req, res, next) => {
+app.post('/users/:userId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const userId = req.params.userId
         const userDataToUpdate = req.body
@@ -197,7 +199,7 @@ app.post('/users/:userId', (req, res, next) => {
 /**
  * Setear el estado del usuario
  */
-app.post('/users/setState/:userId/:action', async (req, res, next) => {
+app.post('/users/setState/:userId/:action', securityMiddleware.checkAppToken, async (req, res, next) => {
     try {
         const userId = req.params.userId
         const action = req.params.action

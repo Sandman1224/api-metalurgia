@@ -2,10 +2,12 @@ const express = require('express')
 const controlGuide = require('../../models/control-guide')
 const ObjectId = require('mongoose').Types.ObjectId
 
+const securityMiddleware = require('../../middlewares/authentication')
+
 const app = express()
 
 // Obtener una guía de plan de control según el tipo de plantilla
-app.get('/controlguide/:type', (req, res, next) => {
+app.get('/controlguide/:type', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let typeTemplate = req.params.type
     
@@ -36,7 +38,7 @@ app.get('/controlguide/:type', (req, res, next) => {
     }
 })
 
-app.get('/controlguide/byTemplate/:templateId', (req, res, next) => {
+app.get('/controlguide/byTemplate/:templateId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const templateIdParam = req.params.templateId
         const templetaIdFormatted = new ObjectId(templateIdParam)

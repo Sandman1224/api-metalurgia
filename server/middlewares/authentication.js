@@ -8,7 +8,7 @@ let checkToken = (req, res, next) => {
 
     jwt.verify(token, process.env.SEED, (error, decoded) => {
         if (error) {
-            return req.status(401).json({
+            return res.status(401).json({
                 ok: false,
                 error: {
                     message: 'Token is not valid.'
@@ -21,6 +21,26 @@ let checkToken = (req, res, next) => {
     });
 }
 
+const checkAppToken = (req, res, next) => {
+    const token = req.get('accessToken')
+
+    jwt.verify(token, process.env.JWTKEY, (error, decoded) => {
+        if (error) {
+            return res.status(401).json({
+                ok: false,
+                error: {
+                    message: 'Token is not valid.'
+                }
+            });
+        }
+
+        if (decoded && decoded.apiToken === process.env.APPSEED) {
+            next();
+        }
+    })
+}
+
 module.exports = {
-    checkToken
+    checkToken,
+    checkAppToken
 }

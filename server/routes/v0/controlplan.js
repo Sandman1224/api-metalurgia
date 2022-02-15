@@ -3,9 +3,11 @@ const controlPlan = require('../../models/control-plan')
 const ObjectId = require('mongoose').Types.ObjectId
 const planControlFacade = require('../../facade/plancontrol-facade')
 
+const securityMiddleware = require('../../middlewares/authentication')
+
 const app = express()
 
-app.get('/controlplans', (req, res, next) => {
+app.get('/controlplans', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const action = req.query.action ? req.query.action : 'data'
         const page = parseInt(req.query.page) || 0
@@ -59,7 +61,7 @@ app.get('/controlplans', (req, res, next) => {
 })
 
 // Obtener el plan de control de una pieza en particular
-app.get('/controlplan', (req, res, next) => {
+app.get('/controlplan', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const query = req.body
     
@@ -91,7 +93,7 @@ app.get('/controlplan', (req, res, next) => {
 })
 
 // Crear un nuevo plan de control para una pieza en particular
-app.put('/controlplan', (req, res, next) => {
+app.put('/controlplan', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const controlPlanData = req.body
         controlPlanData.template_id = new ObjectId(controlPlanData.template_id)
@@ -116,7 +118,7 @@ app.put('/controlplan', (req, res, next) => {
 })
 
 // Finalizar una medición del plan de control para una pieza en particular
-app.post('/controlplan/completeStep/:piece_number', (req, res, next) => {
+app.post('/controlplan/completeStep/:piece_number', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const pieceNumber = req.params.piece_number
         const controlPlanData = req.body
@@ -148,7 +150,7 @@ app.post('/controlplan/completeStep/:piece_number', (req, res, next) => {
     }
 })
 
-app.post('/controlplan/completePlanControl/:piece_number', (req, res, next) => {
+app.post('/controlplan/completePlanControl/:piece_number', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const pieceNumber = req.params.piece_number
         const statusPlanControl = parseInt(req.body.status)

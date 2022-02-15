@@ -10,10 +10,12 @@ const machineFacade = require('../../facade/machines-facade')
 
 const machineMiddleware = require('../../middlewares/machines')
 
+const securityMiddleware = require('../../middlewares/authentication')
+
 module.exports = app
 
 // Obtener lista de máquinas activas
-app.get('/machines', (req, res, next) => {
+app.get('/machines', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let page = parseInt(req.query.page) || 0
         let limit = parseInt(req.query.limit) || 1
@@ -58,7 +60,7 @@ app.get('/machines', (req, res, next) => {
 /**
  * Buscar una máquina por id
  */
- app.get('/machines/:machineId', (req, res, next) => {
+ app.get('/machines/:machineId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const machineId = req.params.machineId
     
@@ -99,7 +101,7 @@ app.get('/machines', (req, res, next) => {
 })
 
 // Activar/parar la máquina
-app.post('/machine/:machineId/:action', (req, res, next) => {
+app.post('/machine/:machineId/:action', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const { machineId, action } = req.params
         const { stopCauses, dateTime, user } = req.body
@@ -170,7 +172,7 @@ app.post('/machine/:machineId/:action', (req, res, next) => {
 })
 
 // Agregar una nueva máquina
-app.put('/machines', machineMiddleware.preSaveValidations, (req, res, next) => {
+app.put('/machines', securityMiddleware.checkAppToken, machineMiddleware.preSaveValidations, (req, res, next) => {
     try {
         let body = req.body
     
@@ -197,7 +199,7 @@ app.put('/machines', machineMiddleware.preSaveValidations, (req, res, next) => {
 /**
  * Editar una maquina por Id
  */
- app.post('/machines/:machineId', machineMiddleware.preSaveValidations, (req, res, next) => {
+ app.post('/machines/:machineId', securityMiddleware.checkAppToken, machineMiddleware.preSaveValidations, (req, res, next) => {
     try {
         const machineId = req.params.machineId
         const machineDataToUpdate = req.body
@@ -238,7 +240,7 @@ app.put('/machines', machineMiddleware.preSaveValidations, (req, res, next) => {
     }
 })
 
-app.delete('/machines/:machineId', (req, res, next) => {
+app.delete('/machines/:machineId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const machineId = req.params.machineId
     

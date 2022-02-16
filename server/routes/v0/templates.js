@@ -4,9 +4,11 @@ const templatesFacade = require('../../facade/templates-facade')
 const ObjectId = require('mongoose').Types.ObjectId
 const { ACTIVE_ITEM } = require('../../utils/constans')
 
+const securityMiddleware = require('../../middlewares/authentication')
+
 const app = express()
 
-app.get('/template', (req, res, next) => {
+app.get('/template', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const action = req.query.action ? req.query.action : 'data'
         let page = parseInt(req.query.page) || 0
@@ -59,7 +61,7 @@ app.get('/template', (req, res, next) => {
     }
 })
 
-app.get('/template/:machineId', (req, res, next) => {
+app.get('/template/:machineId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const machineId = req.params.machineId
         const status = req.query.status
@@ -106,7 +108,7 @@ app.get('/template/:machineId', (req, res, next) => {
     }
 })
 
-app.post('/template', (req, res, next) => {
+app.post('/template', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         let { type, machine_id, created, created_by } = req.body
     
@@ -136,7 +138,7 @@ app.post('/template', (req, res, next) => {
     }
 })
 
-app.post('/setTemplate/:templateId', (req, res, next) => {
+app.post('/setTemplate/:templateId', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const templateId = req.params.templateId
         const { status } = req.body

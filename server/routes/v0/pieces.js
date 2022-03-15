@@ -1,4 +1,6 @@
 const express = require('express')
+const asyncHandler = require('express-async-handler')
+
 const ObjectId = require('mongoose').Types.ObjectId
 const Piece = require('../../models/pieces')
 const piecesFacade = require('../../facade/pieces-facade')
@@ -9,12 +11,17 @@ const securityMiddleware = require('../../middlewares/authentication')
 const app = express()
 
 // Obtener las piezas realizadas por una maquina
-app.get('/pieces/:machineId', securityMiddleware.checkAppToken, (req, res, next) => {
+app.get('/pieces/:machineId', securityMiddleware.checkAppToken, asyncHandler(async (req, res, next) => {
     try {
         const machineId = req.params.machineId
         const machineCode = req.body.machineCode
-    
-        if (!machineId) {
+        
+        const currentYear = moment().format('Y')
+        const currentMonth = moment().format('M')
+        
+        const monthCode = piecesFacade.getMonthCode(currentMonth)
+
+        if (!machineId || !machineCode) {
             return res.status(500).json({
                 ok: false,
                 error: {
@@ -22,43 +29,22 @@ app.get('/pieces/:machineId', securityMiddleware.checkAppToken, (req, res, next)
                 }
             });
         }
-    
-        const query = { 
-            machine_id: new ObjectId(machineId)
-        }
-    
-        Piece.find(query, (error, piecesDb) => {
-            if (error) {
-                return res.status(500).json({
-                    ok: false,
-                    error
-                });
+
+        let machineCounterPieces = await piecesFacade.getLastPieceCode(machineId, currentYear, currentMonth)
+        machineCounterPieces++ // Agregamos la nueva pieza sumando en 1 el contador
+        const formattedNumberPieceCode = piecesFacade.zeroFill(machineCounterPieces, 4)
+        const newPieceCode = `${machineCode}${monthCode}-${formattedNumberPieceCode}`
+
+        res.json({
+            ok: true,
+            data: {
+                newPieceCode
             }
-    
-            if (!piecesDb) {
-                return res.status(400).json({
-                    ok: false,
-                    error: {
-                        message: 'Required data does not exists.'
-                    }
-                });
-            }
-    
-            const monthOfDate = moment().format('M')
-            const nextCodePiece = piecesFacade.getPieceCode(machineCode, monthOfDate, piecesDb.length)
-    
-            res.json({
-                ok: true,
-                data: {
-                    pieces: piecesDb,
-                    nextCodePiece
-                }
-            })
         })
     } catch(error) {
         next(error)
     }
-})
+}))
 
 app.get('/piecesByPagination', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
@@ -171,13 +157,18 @@ app.get('/pieces', securityMiddleware.checkAppToken, (req, res, next) => {
 })
 
 // Agrega una nueva pieza a la plantilla
-app.put('/pieces', securityMiddleware.checkAppToken, (req, res, next) => {
+app.put('/pieces', securityMiddleware.checkAppToken, asyncHandler(async (req, res, next) => {
     try {
-        let body = req.body
+        const body = req.body
+        
+        body.currentYear = moment().format('Y')
+        body.currentMonth = moment().format('M')
+
+        const monthCode = piecesFacade.getMonthCode(body.currentMonth)
     
         let piece = new Piece(body)
     
-        piece.save((error, pieceDb) => {
+        piece.save(async (error, pieceDb) => {
             if (error) {
                 return res.status(500).json({
                     ok: false,
@@ -185,6 +176,11 @@ app.put('/pieces', securityMiddleware.checkAppToken, (req, res, next) => {
                 });
             }
 
+            let machineCounterPieces = await piecesFacade.getLastPieceCode(body.machine_id, body.currentYear, body.currentMonth)
+            machineCounterPieces++
+            const formattedNumberPieceCode = piecesFacade.zeroFill(machineCounterPieces, 4)
+            const newPieceCode = `${body.machine_number}${monthCode}-${formattedNumberPieceCode}`
+            
             const countQueryBuilder = { template_id: body.template_id, status: { $gt: -1 } }
             Piece.countDocuments(countQueryBuilder).exec((counterError, countDb) => {
                 if (counterError) {
@@ -198,7 +194,8 @@ app.put('/pieces', securityMiddleware.checkAppToken, (req, res, next) => {
                     ok: true,
                     totalByTemplate: countDb,
                     data: {
-                        piece: pieceDb
+                        piece: pieceDb,
+                        newPieceCode
                     }
                 })
             })
@@ -206,16 +203,23 @@ app.put('/pieces', securityMiddleware.checkAppToken, (req, res, next) => {
     } catch(error) {
         next(error)
     }
-})
+}))
 
 // Actualizar una pieza
-app.post('/pieces/:piece_number', securityMiddleware.checkAppToken, (req, res, next) => {
+app.post('/pieces/:piece_number/:template_id', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const pieceNumber = req.params.piece_number
+        let templateId = req.params.template_id
         const dataToUpdate = req.body
+        const currentYear = parseInt(moment().format('Y'))
+
+        if (templateId) {
+            templateId = new ObjectId(templateId)
+        }
+
         dataToUpdate.updated = moment().unix()
     
-        Piece.findOneAndUpdate({ piece_number: pieceNumber }, dataToUpdate, { new: true }, (error, pieceDb) => {
+        Piece.findOneAndUpdate({ template_id: templateId, piece_number: pieceNumber, currentYear: currentYear, status: { $gt: -1 } }, dataToUpdate, { new: true }, (error, pieceDb) => {
             if (error) {
                 return res.status(500).json({
                     ok: false,

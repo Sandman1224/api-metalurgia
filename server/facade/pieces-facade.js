@@ -1,4 +1,6 @@
-function getPieceCode(machineCode, currentMonth, pieceNumber) {
+const pieceModel = require('../models/pieces')
+
+function getMonthCode(currentMonth) {
     let monthCode = ''
     switch (currentMonth) {
         case '1':
@@ -39,8 +41,25 @@ function getPieceCode(machineCode, currentMonth, pieceNumber) {
             break
     }
 
+    return monthCode
+}
+
+function getPieceCode(machineCode, currentMonth, pieceNumber) {
+    const monthCode = getMonthCode(currentMonth)
+
     const formattedNumber = zeroFill(pieceNumber + 1, 4)
     return `${ machineCode }${ monthCode }-${ formattedNumber }`
+}
+
+function getLastPieceCode(machineId, currentYear, currentMonth) {
+    const queryParams = { machineId, currentYear, currentMonth }
+    const queryBody = queryBuilder(queryParams)
+
+    try {
+        return pieceModel.countDocuments(queryBody).exec()
+    } catch (error) {
+        return { ok: false, identificator: 'error-db' }
+    }
 }
 
 function zeroFill(number, width)
@@ -65,8 +84,20 @@ function queryBuilder(data) {
         query.piece_number = { $regex: new RegExp(`${data.piece_number}`), $options: 'i' }
     }
 
+    if (data.machine_id) {
+        query.machine_id = data.machine_id
+    }
+
     if (data.template_id) {
         query.template_id = data.template_id
+    }
+
+    if (data.currentYear) {
+        query.currentYear = data.currentYear
+    }
+
+    if (data.currentMonth) {
+        query.currentMonth = data.currentMonth
     }
 
     return query
@@ -74,5 +105,8 @@ function queryBuilder(data) {
 
 module.exports = {
     getPieceCode,
+    getMonthCode,
+    getLastPieceCode,
+    zeroFill,
     queryBuilder
 }

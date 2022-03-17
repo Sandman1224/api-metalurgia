@@ -47,6 +47,7 @@ let pieceSchema = new Schema({
 
 pieceSchema.index({ piece_number: 1, currentYear: 1, status: 1 }, { unique: true })
 pieceSchema.index({ machine_id: 1, current_year: 1, current_month: 1 })
+pieceSchema.index({ template_id: 1, piece_number: 1 })
 
 pieceSchema.on('index', error => {
     // "_id index cannot be sparse"

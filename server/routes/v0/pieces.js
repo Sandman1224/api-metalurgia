@@ -211,7 +211,6 @@ app.post('/pieces/:piece_number/:template_id', securityMiddleware.checkAppToken,
         const pieceNumber = req.params.piece_number
         let templateId = req.params.template_id
         const dataToUpdate = req.body
-        const currentYear = parseInt(moment().format('Y'))
 
         if (templateId) {
             templateId = new ObjectId(templateId)
@@ -219,7 +218,7 @@ app.post('/pieces/:piece_number/:template_id', securityMiddleware.checkAppToken,
 
         dataToUpdate.updated = moment().unix()
     
-        Piece.findOneAndUpdate({ template_id: templateId, piece_number: pieceNumber, currentYear: currentYear, status: { $gt: -1 } }, dataToUpdate, { new: true }, (error, pieceDb) => {
+        Piece.findOneAndUpdate({ template_id: templateId, piece_number: pieceNumber, status: { $gt: -1 } }, dataToUpdate, { new: true }, (error, pieceDb) => {
             if (error) {
                 return res.status(500).json({
                     ok: false,

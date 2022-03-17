@@ -59,4 +59,6 @@ let controlPlanSchema = new Schema({
     }
 })
 
+pieceSchema.index({ template_id: 1, piece_number: 1 })
+
 module.exports = mongoose.model('Control-plan', controlPlanSchema)

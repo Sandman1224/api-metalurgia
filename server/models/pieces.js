@@ -42,7 +42,7 @@ let pieceSchema = new Schema({
     },
     updated: Number
 }, {
-    autoIndex: true
+    autoIndex: false
 })
 
 pieceSchema.index({ piece_number: 1, currentYear: 1, status: 1 }, { unique: true })

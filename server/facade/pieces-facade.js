@@ -84,8 +84,8 @@ function queryBuilder(data) {
         query.piece_number = { $regex: new RegExp(`${data.piece_number}`), $options: 'i' }
     }
 
-    if (data.machine_id) {
-        query.machine_id = data.machine_id
+    if (data.machineId) {
+        query.machine_id = data.machineId
     }
 
     if (data.template_id) {

@@ -104,7 +104,7 @@ app.get('/machines', securityMiddleware.checkAppToken, (req, res, next) => {
 app.post('/machine/:machineId/:action', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const { machineId, action } = req.params
-        const { stopCauses, dateTime, user } = req.body
+        const { stopCauses, dateTime, user, templateId } = req.body
     
         const machineIdFormatted = new ObjectId(machineId)
         let statusMachine = 0
@@ -135,6 +135,7 @@ app.post('/machine/:machineId/:action', securityMiddleware.checkAppToken, (req, 
                     event: 'enable-machine',
                     dateTime,
                     user,
+                    templateId,
                     created: moment().unix()
                 }
             } else if (action === 'desactivate') {
@@ -143,6 +144,7 @@ app.post('/machine/:machineId/:action', securityMiddleware.checkAppToken, (req, 
                     dateTime,
                     stopCauses,
                     user,
+                    templateId,
                     created: moment().unix()
                 }
             } else {

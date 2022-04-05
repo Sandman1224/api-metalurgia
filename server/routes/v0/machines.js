@@ -136,7 +136,8 @@ app.post('/machine/:machineId/:action', securityMiddleware.checkAppToken, (req, 
                     dateTime,
                     user,
                     templateId,
-                    created: moment().unix()
+                    created: moment().unix(),
+                    status: 1
                 }
             } else if (action === 'desactivate') {
                 recordData = {
@@ -145,7 +146,8 @@ app.post('/machine/:machineId/:action', securityMiddleware.checkAppToken, (req, 
                     stopCauses,
                     user,
                     templateId,
-                    created: moment().unix()
+                    created: moment().unix(),
+                    status: 1
                 }
             } else {
                 throw new Error('action requested is invalid')

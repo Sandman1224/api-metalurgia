@@ -25,6 +25,10 @@ let recordSchema = new Schema({
         type: Number,
         required: [true, 'Created date is mandatory']
     },
+    status: {
+        type: Number,
+        required: [true, 'Status is mandatory']
+    },
 })
 
 module.exports = mongoose.model('Record', recordSchema)

@@ -1,6 +1,9 @@
 {
   "name": "api-metalurgia",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.21.0"
+  },
   "description": "Api de integración con el sistema de metalurgia",
   "main": "index.js",
   "scripts": {

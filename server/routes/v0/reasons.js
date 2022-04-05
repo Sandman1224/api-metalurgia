@@ -53,6 +53,11 @@ app.get('/reasons', securityMiddleware.checkAppToken, (req, res, next) => {
 app.get('/reasons/internal', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
         const queryData = req.body ? req.body : {}
+
+        if (queryData.includeDeleted) {
+         queryData.includeDeleted = true   
+        }
+
         const bodyQuery = reasonsFacade.queryBuilder(queryData)
 
         const query = reasonsModel.find(bodyQuery)

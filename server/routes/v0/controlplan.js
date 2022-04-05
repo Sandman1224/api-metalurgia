@@ -118,12 +118,12 @@ app.put('/controlplan', securityMiddleware.checkAppToken, (req, res, next) => {
 })
 
 // Finalizar una medición del plan de control para una pieza en particular
-app.post('/controlplan/completeStep/:piece_number', securityMiddleware.checkAppToken, (req, res, next) => {
+app.post('/controlplan/completeStep/:template_id/:piece_number', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
-        const pieceNumber = req.params.piece_number
+        const { template_id, piece_number } = req.params
         const controlPlanData = req.body
     
-        controlPlan.findOneAndUpdate({ piece_number: pieceNumber }, { "$push": { measures: controlPlanData } }, { new: true }, (error, planControlDb) => {
+        controlPlan.findOneAndUpdate({ template_id: template_id, piece_number: piece_number }, { "$push": { measures: controlPlanData } }, { new: true }, (error, planControlDb) => {
             if (error) {
                 return res.status(500).json({
                     ok: false,
@@ -150,12 +150,12 @@ app.post('/controlplan/completeStep/:piece_number', securityMiddleware.checkAppT
     }
 })
 
-app.post('/controlplan/completePlanControl/:piece_number', securityMiddleware.checkAppToken, (req, res, next) => {
+app.post('/controlplan/completePlanControl/:template_id/:piece_number', securityMiddleware.checkAppToken, (req, res, next) => {
     try {
-        const pieceNumber = req.params.piece_number
+        const { piece_number, template_id } = req.params
         const statusPlanControl = parseInt(req.body.status)
     
-        controlPlan.findOneAndUpdate({ piece_number: pieceNumber }, { $set: { status: statusPlanControl } }, (error, planControlDb) => {
+        controlPlan.findOneAndUpdate({ template_id: template_id, piece_number: piece_number }, { $set: { status: statusPlanControl } }, (error, planControlDb) => {
             if (error) {
                 return res.status(500).json({
                     ok: false,

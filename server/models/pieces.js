@@ -3,9 +3,16 @@ const mongoose = require('mongoose')
 let Schema = mongoose.Schema
 
 let pieceSchema = new Schema({
+    currentYear: {
+        type: Number,
+        required: [true, 'CurrentYear is mandatory']
+    },
+    currentMonth: {
+        type: Number,
+        required: [true, 'currentMonth is mandatory']
+    },
     piece_number: {
         type: String,
-        unique: true,
         required: [true, 'Piece number is mandatory']
     },
     machine_id: {
@@ -34,6 +41,19 @@ let pieceSchema = new Schema({
         required: [true, 'Created by is mandatory']
     },
     updated: Number
+}, {
+    autoIndex: false
 })
+
+pieceSchema.index({ piece_number: 1, currentYear: 1, status: 1 }, { unique: true })
+pieceSchema.index({ machine_id: 1, current_year: 1, current_month: 1 })
+pieceSchema.index({ template_id: 1, piece_number: 1 })
+
+pieceSchema.on('index', error => {
+    // "_id index cannot be sparse"
+    if (error) {
+        console.log(error.message);
+    }
+  });
 
 module.exports = mongoose.model('Piece', pieceSchema)

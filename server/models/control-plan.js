@@ -57,6 +57,10 @@ let controlPlanSchema = new Schema({
         type: String,
         required: [true, 'Created plan control by user is mandatory']
     }
+}, {
+    autoIndex: true
 })
+
+controlPlanSchema.index({ template_id: 1, piece_number: 1 })
 
 module.exports = mongoose.model('Control-plan', controlPlanSchema)

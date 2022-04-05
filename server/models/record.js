@@ -17,9 +17,17 @@ let recordSchema = new Schema({
         type: String,
         required: [true, 'User is mandatory']
     },
+    templateId: {
+        type: mongoose.ObjectId,
+        required: [true, 'TemplateId field is mandatory']
+    },
     created: {
         type: Number,
         required: [true, 'Created date is mandatory']
+    },
+    status: {
+        type: Number,
+        required: [true, 'Status is mandatory']
     },
 })
 

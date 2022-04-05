@@ -10,5 +10,6 @@ app.use(require(`./${version}/controlguide`))
 app.use(require(`./${version}/controlplan`))
 app.use(require(`./${version}/machines`))
 app.use(require(`./${version}/reasons`))
+app.use(require(`./${version}/events`))
 
 module.exports = app;
